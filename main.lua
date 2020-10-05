@@ -13,7 +13,7 @@ Citizen.CreateThread(function()
         local pCoords = GetEntityCoords(PlayerPedId())
         for i, c in ipairs(Cars) do
             if #(pCoords - c.pos) < ShowRange then
-                spawned[i] = SpawnLocalCar(c)
+                SpawnLocalCar(i, c)
                 sleep = false
             elseif spawned[i] ~= nil then
                 DeleteEntity(spawned[i])
@@ -35,7 +35,7 @@ Citizen.CreateThread(function()
     end
 end)
 
-function SpawnLocalCar(c)
+function SpawnLocalCar(i, c)
     local hash = GetHashKey(c.model)
 
     RequestModel(hash)
@@ -55,4 +55,6 @@ function SpawnLocalCar(c)
     SetVehicleOnGroundProperly(veh)
     Wait(100)
     FreezeEntityPosition(veh, true)
+
+    spawned[i] = veh
 end
