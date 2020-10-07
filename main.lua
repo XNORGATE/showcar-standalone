@@ -1,57 +1,60 @@
-ESX = nil
-
-local _nmsl = nil
-local _isShowCar = false
+local spawned = {}
 
 Citizen.CreateThread(function()
-	while ESX == nil do
+	while not ESX do
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
+		Wait(500)
 	end
-	while not ESX.IsPlayerLoaded() do 
-        Citizen.Wait(500)
-    end
+    while not ESX.IsPlayerLoaded() do Wait(500) end
 
-    if ESX.IsPlayerLoaded() then
-        local carmodel = GetHashKey(Config.car)
-
-		Citizen.CreateThread(function()           
-			 -- Car
-            RequestModel(carmodel)
-            while not HasModelLoaded(carmodel) do
-                Citizen.Wait(0)
+    while 1 do
+        inVision = false
+        local sleep = true
+        local pCoords = GetEntityCoords(PlayerPedId())
+        for i, c in ipairs(Cars) do
+            if #(pCoords - c.pos) < ShowRange then
+                SpawnLocalCar(i, c)
+                sleep = false
+            elseif spawned[i] ~= nil then
+                DeleteEntity(spawned[i])
+                spawned[i] = nil
             end
-
-            local vehicle = CreateVehicle(carmodel, Config.x , Config.y, Config.z, Config.h , false, false)
-            
-			SetModelAsNoLongerNeeded(carmodel)
-            SetVehicleEngineOn(vehicle, true, true, true )
-            SetVehicleBrakeLights(vehicle, true )
-            SetVehicleLights(vehicle, 2)
-            SetVehicleLightsMode(vehicle, 2)
-            SetVehicleInteriorlight(vehicle, true )
-			
-			FreezeEntityPosition(vehicle, true)
-			
-			if Config.carspin then
-              local _curPos = GetEntityCoords(vehicle)
-              SetEntityCoords(vehicle, _curPos.x, _curPos.y, _curPos.z + 1, false, false, true, true)
-			  _nmsl = vehicle
-			end
-            
-        end)
+        end
+        _ = sleep and Wait(500) or Wait(0)
     end
 end)
 
 Citizen.CreateThread(function() 
-    while true do
-        if _nmsl ~= nil then
-            local _heading = GetEntityHeading(_nmsl)
-            local _z = _heading - 0.3
-            SetEntityHeading(_nmsl, _z)
+    while 1 do
+        for i, c in pairs(spawned) do
+            if Cars[i].spin then
+                SetEntityHeading(c, GetEntityHeading(c) - 0.3)
+            end
         end
-        Citizen.Wait(5)
+        Wait(5)
     end
 end)
 
+function SpawnLocalCar(i, c)
+    local hash = GetHashKey(c.model)
 
+    RequestModel(hash)
+    local attempt = 0
+    while not HasModelLoaded(hash) do
+        attempt = attempt + 1
+        _ = attempt > 2000 and return or Wait(0)
+    end
+
+    local veh = CreateVehicle(hash, c.pos, c.heading, false, false)
+	SetModelAsNoLongerNeeded(hash)
+    SetVehicleEngineOn(veh, true, true, true)
+    SetVehicleBrakeLights(veh, true)
+    SetVehicleLights(veh, 2)
+    SetVehicleLightsMode(veh, 2)
+    SetVehicleInteriorlight(veh, true)
+    SetVehicleOnGroundProperly(veh)
+    Wait(100)
+    FreezeEntityPosition(veh, true)
+
+    spawned[i] = veh
+end
