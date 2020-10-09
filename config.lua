@@ -3,13 +3,13 @@ Cars = {
     {
         pos = vec(223.37, -841.97, 29.88),
         heading = 72.25,
-        model = 'r8ppi',
+        model = 'blista',
         spin = true
     },
     {
-        pos = vec(221.37, -841.97, 29.88),
+        pos = vec(210.37, -841.97, 29.88),
         heading = 72.25,
-        model = 'r8ppi',
+        model = 'blista',
         spin = false
     }
 }
