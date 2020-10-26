@@ -1,12 +1,6 @@
 spawned = {}
 
 Citizen.CreateThread(function()
-	while not ESX do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Wait(500)
-	end
-    while not ESX.IsPlayerLoaded() do Wait(500) end
-
     while 1 do
         local pCoords = GetEntityCoords(PlayerPedId())
         for i=1, #Cars do
