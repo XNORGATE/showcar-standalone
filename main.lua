@@ -46,7 +46,7 @@ function SpawnLocalCar(i)
             Wait(0)
         end
 
-        local veh = CreateVehicle(hash, Cars[i].pos, Cars[i].heading, false, false)
+        local veh = CreateVehicle(hash, Cars[i].pos.x, Cars[i].pos.y, Cars[i].pos.z-1,Cars[i].heading, false, false)
         SetModelAsNoLongerNeeded(hash)
         SetVehicleEngineOn(veh, true, true, true)
         SetVehicleBrakeLights(veh, true)
