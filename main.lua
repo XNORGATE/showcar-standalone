@@ -80,7 +80,7 @@ end)
 function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	local px, py, pz = table.unpack(GetGameplayCamCoords())
 	local dist       = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)    
-	local scale      = (1 / dist) * 20
+	local scale      = (1 / dist) * 30
 	local fov        = (1 / GetGameplayCamFov()) * 100
 	local scale      = scale * fov   
 	SetTextScale(scaleX * scale, scaleY * scale)
