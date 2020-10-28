@@ -4,7 +4,7 @@ Citizen.CreateThread(function()
     while 1 do
         local pCoords = GetEntityCoords(PlayerPedId())
         for i=1, #Cars do  
-            if #(pCoords - Cars[i].pos) < ShowRange then                                    
+            if true then                                    
                 if Cars[i].spawned == nil then
                     SpawnLocalCar(i) 
                 end
@@ -24,7 +24,7 @@ Citizen.CreateThread(function()
         local pl = GetEntityCoords(GetPlayerPed(-1), true)
         for k, v in pairs(Cars) do
             if GetDistanceBetweenCoords(pl.x, pl.y, pl.z, v.pos.x, v.pos.y, v.pos.z, true) < ShowRange then
-                Draw3DText(v.pos.x, v.pos.y, v.pos.z - 0.5, v.text, 0, 0.1, 0.1) 
+                Draw3DText(v.pos.x, v.pos.y, v.pos.z - 0.5, v.text, 0, 0.1, 0.1)                
             end
         end
     end
@@ -62,7 +62,21 @@ function SpawnLocalCar(i)
         SetVehicleInteriorlight(veh, true)
         SetVehicleOnGroundProperly(veh)
         FreezeEntityPosition(veh, true)
-
+        SetVehicleCanBreak(veh, true)
+        SetVehicleFullbeam(veh, true)
+        if carInvincible then
+        SetVehicleReceivesRampDamage(veh, true)
+        RemoveDecalsFromVehicle(veh)
+        SetVehicleCanBeVisiblyDamaged(veh, false)
+        SetVehicleLightsCanBeVisiblyDamaged(veh, false)
+        SetVehicleWheelsCanBreakOffWhenBlowUp(veh, false)  
+        SetDisableVehicleWindowCollisions(veh, true)    
+        SetEntityInvincible(veh, true)
+        end
+        if DoorLock then 
+            SetVehicleDoorsLocked(veh, 2)
+        end
+        SetVehicleNumberPlateText(veh, Cars[i].plate)
         Cars[i].spawned = veh
     end)
 end
@@ -80,7 +94,7 @@ end)
 function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	local px, py, pz = table.unpack(GetGameplayCamCoords())
 	local dist       = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)    
-	local scale      = (1 / dist) * 30
+	local scale      = (1 / dist) * 20
 	local fov        = (1 / GetGameplayCamFov()) * 100
 	local scale      = scale * fov   
 	SetTextScale(scaleX * scale, scaleY * scale)
