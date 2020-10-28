@@ -1,14 +1,18 @@
-spawned = {}
+
+spawned = nil
 
 Citizen.CreateThread(function()
     while 1 do
         local pCoords = GetEntityCoords(PlayerPedId())
         for i=1, #Cars do  
-            if true then                                    
+            if #(pCoords - Cars[i].pos) < ShowRange then                                    
                 if Cars[i].spawned == nil then
                     SpawnLocalCar(i) 
                 end
             elseif Cars[i].spawned ~= nil then
+                DeleteEntity(Cars[i].spawned)
+                Cars[i].spawned = nil 
+            else
                 DeleteEntity(Cars[i].spawned)
                 Cars[i].spawned = nil                                
             end
@@ -44,7 +48,6 @@ end)
 function SpawnLocalCar(i)
     Citizen.CreateThread(function()
         local hash = GetHashKey(Cars[i].model)
-
         RequestModel(hash)
         local attempt = 0
         while not HasModelLoaded(hash) do
@@ -52,7 +55,6 @@ function SpawnLocalCar(i)
             if attempt > 2000 then return end
             Wait(0)
         end
-
         local veh = CreateVehicle(hash, Cars[i].pos.x, Cars[i].pos.y, Cars[i].pos.z-1,Cars[i].heading, false, false)
         SetModelAsNoLongerNeeded(hash)
         SetVehicleEngineOn(veh, true, true, true)
@@ -111,3 +113,4 @@ function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	DrawText(0.0, 0.0)
 	ClearDrawOrigin()
 end
+
