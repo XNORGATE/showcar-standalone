@@ -1,9 +1,17 @@
+local ped
+Citizen.CreateThread(function()
+	while 1 do
+		ped = PlayerPedId()
+		Wait(5000)
+	end
+end)
 
 spawned = nil
 
 Citizen.CreateThread(function()
+	local ped = ped
     while 1 do
-        local pCoords = GetEntityCoords(PlayerPedId())
+        local pCoords = GetEntityCoords(ped)
         for i=1, #Cars do  
             if #(pCoords - Cars[i].pos) < ShowRange then                                    
                 if Cars[i].spawned == nil then
@@ -23,11 +31,12 @@ end)
 
 
 Citizen.CreateThread(function()
+	local ped = ped
     while true do
         Citizen.Wait(0)
-        local pl = GetEntityCoords(GetPlayerPed(-1), true)
+        local pl = GetEntityCoords(ped, true)
         for k, v in pairs(Cars) do
-            if GetDistanceBetweenCoords(pl.x, pl.y, pl.z, v.pos.x, v.pos.y, v.pos.z, true) < ShowRange then
+            if #(vector3(pl.x, pl.y, pl.z) - (v.pos.x, v.pos.y, v.pos.z)) < ShowRange then
                 Draw3DText(v.pos.x, v.pos.y, v.pos.z - 0.5, v.text, 0, 0.1, 0.1)                
             end
         end
@@ -95,7 +104,7 @@ end)
 
 function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	local px, py, pz = table.unpack(GetGameplayCamCoords())
-	local dist       = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)    
+	local dist       = #((px, py, pz) - (x, y, z))    
 	local scale      = (1 / dist) * 20
 	local fov        = (1 / GetGameplayCamFov()) * 100
 	local scale      = scale * fov   
