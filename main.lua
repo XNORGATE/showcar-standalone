@@ -9,22 +9,18 @@ end)
 spawned = nil
 
 Citizen.CreateThread(function()
-	local ped = ped
     while 1 do
-        local pCoords = GetEntityCoords(ped)
+        local pCoords = GetEntityCoords(PlayerPedId())
         for i=1, #Cars do  
             if #(pCoords - Cars[i].pos) < ShowRange then                                    
                 if Cars[i].spawned == nil then
                     SpawnLocalCar(i) 
                 end
-            elseif Cars[i].spawned ~= nil then
-                DeleteEntity(Cars[i].spawned)
-                Cars[i].spawned = nil 
             else
                 DeleteEntity(Cars[i].spawned)
                 Cars[i].spawned = nil                                
             end
-            Wait(100)
+            Wait(500)
         end
     end
 end)
@@ -36,7 +32,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(0)
         local pl = GetEntityCoords(ped, true)
         for k, v in pairs(Cars) do
-            if #(vector3(pl.x, pl.y, pl.z) - (v.pos.x, v.pos.y, v.pos.z)) < ShowRange then
+            if GetDistanceBetweenCoords(pl.x, pl.y, pl.z, v.pos.x, v.pos.y, v.pos.z, true) < ShowRange then
                 Draw3DText(v.pos.x, v.pos.y, v.pos.z - 0.5, v.text, 0, 0.1, 0.1)                
             end
         end
@@ -66,20 +62,20 @@ function SpawnLocalCar(i)
         end
         local veh = CreateVehicle(hash, Cars[i].pos.x, Cars[i].pos.y, Cars[i].pos.z-1,Cars[i].heading, false, false)
         SetModelAsNoLongerNeeded(hash)
-        SetVehicleEngineOn(veh, true, true, true)
-        SetVehicleBrakeLights(veh, true)
-        SetVehicleLights(veh, 2)
-        SetVehicleLightsMode(veh, 2)
-        SetVehicleInteriorlight(veh, true)
+        SetVehicleEngineOn(veh, false)
+        SetVehicleBrakeLights(veh, false)
+        SetVehicleLights(veh, 0)
+        SetVehicleLightsMode(veh, 0)
+        SetVehicleInteriorlight(veh, false)
         SetVehicleOnGroundProperly(veh)
         FreezeEntityPosition(veh, true)
         SetVehicleCanBreak(veh, true)
-        SetVehicleFullbeam(veh, true)
+        SetVehicleFullbeam(veh, false)
         if carInvincible then
         SetVehicleReceivesRampDamage(veh, true)
         RemoveDecalsFromVehicle(veh)
-        SetVehicleCanBeVisiblyDamaged(veh, false)
-        SetVehicleLightsCanBeVisiblyDamaged(veh, false)
+        SetVehicleCanBeVisiblyDamaged(veh, true)
+        SetVehicleLightsCanBeVisiblyDamaged(veh, true)
         SetVehicleWheelsCanBreakOffWhenBlowUp(veh, false)  
         SetDisableVehicleWindowCollisions(veh, true)    
         SetEntityInvincible(veh, true)
@@ -104,7 +100,7 @@ end)
 
 function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	local px, py, pz = table.unpack(GetGameplayCamCoords())
-	local dist       = #((px, py, pz) - (x, y, z))    
+	local dist = GetDistanceBetweenCoords(px, py, pz, x, y, z, 1)    
 	local scale      = (1 / dist) * 20
 	local fov        = (1 / GetGameplayCamFov()) * 100
 	local scale      = scale * fov   
@@ -122,4 +118,3 @@ function Draw3DText(x, y, z, textInput, fontId, scaleX, scaleY)
 	DrawText(0.0, 0.0)
 	ClearDrawOrigin()
 end
-
