@@ -60,9 +60,13 @@ function SpawnLocalCar(i)
             if attempt > 2000 then return end
             Wait(0)
         end
-        local veh = CreateVehicle(hash, Cars[i].pos.x, Cars[i].pos.y, Cars[i].pos.z-1,Cars[i].heading, false, false)
+        
+        -- Spawn vehicle
+        local veh = CreateVehicle(hash, Cars[i].pos.x, Cars[i].pos.y, Cars[i].pos.z-1, Cars[i].heading, false, false)
         SetModelAsNoLongerNeeded(hash)
-        SetVehicleEngineOn(veh, false)
+        
+        -- Set vehicle properties to ensure it's clean
+        SetVehicleEngineOn(veh, false, false, true)
         SetVehicleBrakeLights(veh, false)
         SetVehicleLights(veh, 0)
         SetVehicleLightsMode(veh, 0)
@@ -71,14 +75,25 @@ function SpawnLocalCar(i)
         FreezeEntityPosition(veh, true)
         SetVehicleCanBreak(veh, true)
         SetVehicleFullbeam(veh, false)
+        
+        -- Ensure the vehicle is clean and undamaged
+        SetVehicleDamage(veh, 0, 0, 0) -- Reset damage
+        SetVehicleDirtLevel(veh, 0.0)  -- Remove dirt
+
+        -- Set random colors
+        local primaryColor = math.random(0, 159) -- Random color ID for primary color
+        local secondaryColor = math.random(0, 159) -- Random color ID for secondary color
+        SetVehicleColours(veh, primaryColor, secondaryColor)
+
+        -- Additional settings
         if carInvincible then
-        SetVehicleReceivesRampDamage(veh, true)
-        RemoveDecalsFromVehicle(veh)
-        SetVehicleCanBeVisiblyDamaged(veh, true)
-        SetVehicleLightsCanBeVisiblyDamaged(veh, true)
-        SetVehicleWheelsCanBreakOffWhenBlowUp(veh, false)  
-        SetDisableVehicleWindowCollisions(veh, true)    
-        SetEntityInvincible(veh, true)
+            SetVehicleReceivesRampDamage(veh, true)
+            RemoveDecalsFromVehicle(veh)
+            SetVehicleCanBeVisiblyDamaged(veh, true)
+            SetVehicleLightsCanBeVisiblyDamaged(veh, true)
+            SetVehicleWheelsCanBreakOffWhenBlowUp(veh, false)  
+            SetDisableVehicleWindowCollisions(veh, true)    
+            SetEntityInvincible(veh, true)
         end
         if DoorLock then 
             SetVehicleDoorsLocked(veh, 2)
