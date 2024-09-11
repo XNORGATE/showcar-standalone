@@ -103,6 +103,8 @@ function SpawnLocalCar(i)
     end)
 end
 
+
+
 AddEventHandler('onResourceStop', function(res)
     if res == GetCurrentResourceName() then
         for i=1, #Cars do
